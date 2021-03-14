@@ -1,0 +1,43 @@
+[package]
+name = "music-box"
+version = "0.1.0"
+authors = ["Todd Treece <todd@uniontownlabs.org>"]
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0.38"
+bitvec = "0.21.0"
+chrono = { version = "0.4.19", features = ["serde"] }
+env_logger = "0.8.3"
+log = "0.4.14"
+r2d2 = "0.8.9"
+r2d2_sqlite = "0.17.0"
+rodio = {version="0.11", features=["flac"]}
+serde = "1.0.123"
+serde_derive = "1.0.123"
+serde_json = "1.0.64"
+shared-bus = {version="0.2.0", features=["std"]}
+dirs = "3.0.1"
+actix-web = "3.3.2"
+derive_more = "0.99.11"
+tokio = { version = "1.2", features = ["full"] }
+
+[dependencies.rusqlite]
+version = "0.24.2"
+features = ["bundled", "chrono", "serde_json"]
+
+[target.'cfg(target_os= "macos")'.dependencies]
+termion = "1.5.6"
+tui = "0.14.0"
+
+[target.'cfg(target_arch = "arm")'.dependencies]
+rppal = {version="0.11.3", features=["hal"]}
+mcp23017 = { git = "https://github.com/mrd0ll4r/mcp23017.git" }
+
+[lib]
+name = "music_box"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "music-box"
+path = "src/main.rs"
