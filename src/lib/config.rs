@@ -10,7 +10,7 @@ impl Config {
   pub const fn new() -> Self {
     Self {
       volume: 0.025,
-      audio_format: "flac",
+      audio_format: "mp3",
     }
   }
 
@@ -29,6 +29,31 @@ impl Config {
 
   pub fn song_dir(&self) -> String {
     self.dir("songs")
+  }
+
+  pub fn pitch_dir(&self) -> String {
+    self.dir("pitch")
+  }
+
+  pub fn pitch_path(&self, pin: usize) -> String {
+    let path = format!(
+      "{}/{}.{}",
+      self.pitch_dir(),
+      pin.to_string(),
+      self.audio_format
+    );
+    debug!("pitch path: {}", path);
+    path
+  }
+
+  pub fn speech_dir(&self) -> String {
+    self.dir("speech")
+  }
+
+  pub fn speech_path(&self, name: String) -> String {
+    let path = format!("{}/{}.{}", self.speech_dir(), name, self.audio_format);
+    debug!("speech_path: {}", path);
+    path
   }
 
   pub fn song_path(&self, name: String) -> String {

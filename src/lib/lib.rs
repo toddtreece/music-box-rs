@@ -1,5 +1,6 @@
 pub mod config;
 pub mod db;
+pub mod piano;
 pub mod sequencer;
 mod take_duration;
 pub mod ui;

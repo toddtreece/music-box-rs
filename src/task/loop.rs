@@ -17,7 +17,7 @@ pub fn start() -> Result<()> {
   let device = rodio::default_output_device().unwrap();
   let sink = Sink::new(&device);
   let source = Decoder::new(BufReader::new(File::open(
-    CONFIG.loop_path("clyde".to_owned()),
+    CONFIG.loop_path("loop".to_owned()),
   )?))?;
 
   let sequencer = Sequencer::new(source, STEPS * QUANTIZE, move |current, next| {

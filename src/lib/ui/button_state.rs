@@ -1,5 +1,6 @@
 use bitvec::prelude::*;
 
+#[derive(Clone)]
 pub struct ButtonState {
   current: BitVec,
   last: BitVec,
@@ -24,6 +25,12 @@ impl ButtonState {
     let mut current = self.current.clone();
     current &= !self.last.clone();
     current.iter_ones().collect::<Vec<usize>>()
+  }
+
+  pub fn newly_released(&self) -> Vec<usize> {
+    let mut released = self.last.clone();
+    released &= !self.current.clone();
+    released.iter_ones().collect::<Vec<usize>>()
   }
 
   pub fn pressed(&self) -> Vec<usize> {

@@ -19,6 +19,10 @@ pub trait MusicBox {
     self.get_state().newly_pressed()
   }
 
+  fn newly_released(&self) -> Vec<usize> {
+    self.get_state().newly_released()
+  }
+
   fn poll(&mut self) -> Result<()> {
     let state = self.read()?;
     self.save_state(state)

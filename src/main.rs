@@ -9,18 +9,20 @@ async fn main() {
   env_logger::init();
   fs::create_dir_all(get_config().song_dir()).expect("unable to create song directory");
   fs::create_dir_all(get_config().loop_dir()).expect("unable to create loop directory");
+  fs::create_dir_all(get_config().speech_dir()).expect("unable to create speech directory");
 
-  let (tx, mut rx) = mpsc::channel(32);
-  let song_tx = tx.clone();
+  let (tx, mut rx) = mpsc::channel::<String>(32);
+  let task_tx = tx.clone();
 
-  task::http::start().unwrap();
+  task::http::start(task_tx).unwrap();
 
   tokio::spawn(async move {
-    song_tx.send("starting jukebox task").await.unwrap();
-    task::song::start().unwrap();
+    //task::song::start().unwrap();
+    //task::r#loop::start().unwrap();
+    task::game::start().await.unwrap();
   });
 
   while let Some(message) = rx.recv().await {
-    info!("{}", message);
+    info!("task selected: {}", message);
   }
 }

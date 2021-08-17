@@ -7,21 +7,17 @@ RS := $(shell find ./src -name '*.rs')
 OUT = ./target
 TAR = $(addprefix ${NAME}-$(VERSION)-, $(addsuffix .tar.gz, $(PLATFORM)))
 
-CROSS_PLATFORM = $(addprefix $(OUT)/, $(addsuffix /release/${NAME}, $(PLATFORM)))
+CROSS_PLATFORM := $(addprefix $(OUT)/, $(addsuffix /release/${NAME}, $(PLATFORM)))
 TARGET = $(OUT)/%/release/${NAME}
 CROSS_FLAGS = --release --target=$*
 
-debug: CROSS_PLATFORM = $(addprefix $(OUT)/, $(addsuffix /debug/${NAME}, $(PLATFORM)))
-debug: TARGET = $(OUT)/%/debug/${NAME}
-debug: CROSS_FLAGS = --target=$*
-
 $(PLATFORM):
-	docker build --build-arg CROSS_PLATFORM=$* --build-arg CROSS_VERSION=${CROSS_VERSION} -t ${NAME}-$*:latest .
-	rustup target add $*
+	docker build --build-arg CROSS_PLATFORM=$@ --build-arg CROSS_VERSION=${CROSS_VERSION} -t ${NAME}-$@:latest .
+	rustup target add $@
 
 init: $(PLATFORM)
 
-$(CROSS_PLATFORM): $(TARGET): $(RS)
+$(CROSS_PLATFORM): $(TARGET): $(RS) cargo.toml
 	cross build $(CROSS_FLAGS)
 
 $(TAR): ${NAME}-$(VERSION)-%.tar.gz: release
@@ -41,7 +37,9 @@ ssh:
 	ssh pi@${NAME}.local
 
 rsync:
-	rsync -azP loops pi@${NAME}.local:~/.local/.music_box
+	rsync -azP loops pi@${NAME}.local:~/.local/share/music_box
+	rsync -azP speech pi@${NAME}.local:~/.local/share/music_box
+	rsync -azP pitch pi@${NAME}.local:~/.local/share/music_box
 
 release: $(CROSS_PLATFORM)
 

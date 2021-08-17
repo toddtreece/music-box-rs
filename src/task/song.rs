@@ -61,6 +61,7 @@ impl SongList {
 pub fn start() -> Result<()> {
   let mut ui = UI::new();
   let mut songs = SongList::new();
+  let _jukebox = create_sink(CONFIG.speech_path("jukebox".to_owned()))?;
 
   loop {
     ui.poll()?;
