@@ -2,6 +2,7 @@ use crate::ui::button_state::ButtonState;
 use crate::ui::traits::MusicBox;
 use anyhow::Result;
 use bitvec::prelude::*;
+use lazy_static::lazy_static;
 use mcp23017::{PinMode, MCP23017};
 use rppal::i2c::I2c;
 use shared_bus::{BusManagerStd, I2cProxy};
@@ -14,8 +15,14 @@ const LED_ADDRESS: u8 = 0x20;
 const BUTTON_COUNT: usize = 12;
 const BUTTON_MAP: [u8; BUTTON_COUNT] = [8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 4];
 
+lazy_static! {
+  static ref BUS: &'static BusManagerStd<I2c> = {
+    let i2c: I2c = I2c::new().unwrap();
+    shared_bus::new_std!(I2c = i2c).unwrap()
+  };
+}
+
 pub struct RaspberryPI {
-  bus: &'static BusManagerStd<I2c>,
   buttons: MCP23017<I2cProxy<'static, Mutex<I2c>>>,
   leds: MCP23017<I2cProxy<'static, Mutex<I2c>>>,
   state: ButtonState,
@@ -23,21 +30,17 @@ pub struct RaspberryPI {
 
 impl MusicBox for RaspberryPI {
   fn new() -> Self {
-    let i2c = I2c::new().unwrap();
-    let bus: &'static _ = shared_bus::new_std!(I2c = i2c).unwrap();
-
-    let mut buttons = MCP23017::new(bus.acquire_i2c(), BUTTON_ADDRESS).unwrap();
-    for pin in BUTTON_MAP.iter() {
-      buttons.pull_up(*pin, true).unwrap();
+    let mut buttons = MCP23017::new(BUS.acquire_i2c(), BUTTON_ADDRESS).unwrap();
+    for pin in 0..16 {
+      buttons.pull_up(pin, true).unwrap();
     }
     buttons.all_pin_mode(mcp23017::PinMode::INPUT).unwrap();
 
-    let mut leds = MCP23017::new(bus.acquire_i2c(), LED_ADDRESS).unwrap();
+    let mut leds = MCP23017::new(BUS.acquire_i2c(), LED_ADDRESS).unwrap();
     leds.all_pin_mode(PinMode::OUTPUT).unwrap();
     leds.write_gpioab(0).unwrap();
 
     Self {
-      bus,
       buttons,
       leds,
       state: ButtonState::new(BUTTON_COUNT),

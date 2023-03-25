@@ -17,7 +17,7 @@ $(PLATFORM):
 
 init: $(PLATFORM)
 
-$(CROSS_PLATFORM): $(TARGET): $(RS) cargo.toml
+$(CROSS_PLATFORM): $(TARGET): $(RS) Cargo.toml
 	cross build $(CROSS_FLAGS)
 
 $(TAR): ${NAME}-$(VERSION)-%.tar.gz: release

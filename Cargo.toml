@@ -23,6 +23,7 @@ derive_more = "0.99.11"
 tokio = { version = "1.2", features = ["full"] }
 rand = "0.8.4"
 futures = "0.3.16"
+lazy_static = "1.4.0"
 
 [dependencies.rusqlite]
 version = "0.24.2"
@@ -34,7 +35,7 @@ tui = "0.14.0"
 
 [target.'cfg(target_arch = "arm")'.dependencies]
 rppal = {version="0.11.3", features=["hal"]}
-mcp23017 = { git = "https://github.com/mrd0ll4r/mcp23017.git" }
+mcp23017 = { git = "https://github.com/mrd0ll4r/mcp23017.git", rev="08947b94f1978eb8ddf56b6026948acbc9a5ea7b" }
 
 [lib]
 name = "music_box"

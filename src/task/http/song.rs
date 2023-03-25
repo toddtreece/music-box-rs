@@ -1,8 +1,8 @@
-use super::types::HttpError;
+use super::types::{AppData, HttpError};
 use actix_web::{web, HttpResponse};
 use anyhow::Result;
 use music_box::{
-  db::{button_map, model::Song, song, Pool},
+  db::{button_map, model::Song, song},
   util::download_song,
 };
 use serde_derive::{Deserialize, Serialize};
@@ -13,8 +13,8 @@ pub struct DownloadRequest {
   pub url: String,
 }
 
-pub async fn list(db: web::Data<Pool>) -> Result<HttpResponse, HttpError> {
-  let pool = db.clone();
+pub async fn list(data: web::Data<AppData>) -> Result<HttpResponse, HttpError> {
+  let pool = data.db_pool.clone();
   let result =
     web::block(move || -> Result<Vec<Song>, anyhow::Error> { song::list(pool.get()?) }).await;
 
@@ -22,10 +22,10 @@ pub async fn list(db: web::Data<Pool>) -> Result<HttpResponse, HttpError> {
 }
 
 pub async fn download(
-  db: web::Data<Pool>,
+  data: web::Data<AppData>,
   payload: web::Json<DownloadRequest>,
 ) -> Result<HttpResponse, HttpError> {
-  let pool = db.clone();
+  let pool = data.db_pool.clone();
 
   web::block(move || -> Result<(), anyhow::Error> {
     let response = download_song(payload.url.clone())?;

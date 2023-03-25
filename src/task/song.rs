@@ -6,6 +6,7 @@ use music_box::ui::{MusicBox, UI};
 use rodio::{Decoder, Sink};
 use std::fs::File;
 use std::io::BufReader;
+use tokio::time::{sleep, Duration};
 
 const CONFIG: Config = get_config();
 
@@ -50,7 +51,7 @@ impl SongList {
   }
 
   pub fn stop(&mut self) {
-    if let Some(ref current) = self.current {
+    if let Some(current) = &self.current {
       current.stop();
     }
     self.current = None;
@@ -58,7 +59,7 @@ impl SongList {
   }
 }
 
-pub fn start() -> Result<()> {
+pub async fn start() -> Result<()> {
   let mut ui = UI::new();
   let mut songs = SongList::new();
   let _jukebox = create_sink(CONFIG.speech_path("jukebox".to_owned()))?;
@@ -82,5 +83,6 @@ pub fn start() -> Result<()> {
         ui.clear()?;
       }
     }
+    sleep(Duration::from_millis(10)).await;
   }
 }

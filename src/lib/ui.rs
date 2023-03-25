@@ -1,6 +1,7 @@
 mod button_state;
 mod traits;
 
+pub use button_state::ButtonState;
 pub use traits::MusicBox;
 
 #[cfg(all(target_os = "linux", target_arch = "arm"))]
